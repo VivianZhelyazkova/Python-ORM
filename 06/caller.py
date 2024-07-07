@@ -177,3 +177,13 @@ def update_dungeon_rewards():
             When(difficulty__endswith="s", then=Value("Dragonheart Amulet"))
         )
     )
+
+
+def set_new_locations():
+    Dungeon.objects.update(
+        location=Case(
+            When(recomended_level=25, then=Value("Enchanted Maze")),
+            When(recomended_level=50, then=Value("Grimstone Mines")),
+            When(recomended_level=75, then=Value("Shadowed Abyss"))
+        )
+    )
