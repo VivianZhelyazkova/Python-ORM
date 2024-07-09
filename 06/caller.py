@@ -3,14 +3,14 @@ from typing import List
 
 import django
 
-
 # Set up Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "orm_skeleton.settings")
 django.setup()
 
-from main_app.models import ArtworkGallery, Laptop, ChessPlayer, Meal, Dungeon
+from main_app.models import ArtworkGallery, Laptop, ChessPlayer, Meal, Dungeon, Workout
 from main_app.choices import BrandChoices, OpSysChoices
 from django.db.models import Case, When, Value
+
 
 def show_highest_rated_art():
     best_art = ArtworkGallery.objects.order_by("-rating", "id").first()
@@ -187,3 +187,40 @@ def set_new_locations():
             When(recomended_level=75, then=Value("Shadowed Abyss"))
         )
     )
+
+
+def show_workouts():
+    workouts = Workout.objects.filter(workout_type=["Calisthenics", "CrossFit"]).order_by("id")
+    return "\n".join(str(w) for w in workouts)
+
+
+def get_high_difficulty_cardio_workouts():
+    return Workout.objects.filter(workout_type="Cardio").filter(difficulty="High").order_by("instructor")
+
+
+def set_new_instructors():
+    Workout.objects.update(
+        instructor=Case(
+            When(workout_type="Cardio", then=Value("John Smith")),
+            When(workout_type="Strength", then=Value("Michale Williams")),
+            When(workout_type="Yoga", then=Value("Emily Johnson")),
+            When(workout_type="CrossFit", then=Value("Sarah Davis")),
+            When(workout_type="Calisthenics", then=Value("Chris Heria"))
+        )
+    )
+
+
+def set_new_duration_times():
+    Workout.objects.update(
+        duration=Case(
+            When(instructor="John Smith", then=Value("15 minutes")),
+            When(instructor="Sarah Davis", then=Value("15 minutes")),
+            When(instructor="Chris Heria", then=Value("30 minutes")),
+            When(instructor="Michale Williams", then=Value("1 hour")),
+            When(instructor="Emily Johnson", then=Value("1 hour and 30 minutes"))
+        )
+    )
+
+
+def delete_workouts():
+    Workout.objects.exclude(workout_type__in=["Strength", "Calisthenics"]).delete()
