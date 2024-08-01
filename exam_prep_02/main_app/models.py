@@ -18,6 +18,9 @@ class Director(Base):
     years_of_experience = models.SmallIntegerField(validators=[MinValueValidator(0)], default=0)
     objects = DirectorManager()
 
+    def __str__(self):
+        return f"Director: {self.full_name}, nationality: {self.nationality}, experience:{self.years_of_experience}"
+
 
 class Actor(Base):
     is_awarded = models.BooleanField(default=False)
